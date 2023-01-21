@@ -1,25 +1,25 @@
-const mongoose = require('mongoose');
-const todoModel = require('./repositories/TodoModel')
-require('dotenv').config();
-
-const PORT = process.env.PORT;
-// console.log(PORT);
-const uri =
-    "mongodb+srv://parthiv:parthiv@cluster0.ehsdwnr.mongodb.net/?retryWrites=true&w=majority";
-
-mongoose.connect(uri)
-
-const obj = {id : 2, text : "this is aaadf note", created_at : new Date()}
-
-const todo = todoModel(obj)
-
-// console.log(todo)
-
-const filter = {};
-todoModel.find(filter)
-    .then((todos) => console.log(todos))
-    .catch((err) => console.log(err))
-
-// todo.save()
-//     .then((todo) => console.log(todo))
-//     .catch((err) => (console.log(err)))
+const { Pool } = require("pg");
+const dotenv = require("dotenv");
+dotenv.config();
+ 
+const connectDb = async () => {
+    try {
+        const pool = new Pool({
+            user: process.env.PGUSER,
+            host: process.env.PGHOST,
+            database: process.env.PGDATABASE,
+            password: process.env.PGPASSWORD,
+            port: process.env.PGPORT,
+        });
+ 
+        await pool.connect()
+        const res = await pool.query('create table if not exists ;')
+        console.log(res)
+        await pool.end()
+    } catch (error) {
+        console.log(error)
+    }
+}
+ 
+connectDb().then(()=>process.exit())
+            .catch((err) => console.log(err))
